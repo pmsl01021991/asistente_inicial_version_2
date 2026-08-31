@@ -1,6 +1,5 @@
 import speech_recognition as sr
 import os
-import json
 import sys
 import time
 import asyncio
