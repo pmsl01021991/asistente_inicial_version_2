@@ -1,0 +1,11 @@
+venv/
+build/
+dist/
+clave_secreta.key
+documentos/
+node_modules/
+_pycache/
+vosk-model-es-0.42/
+ffmpeg/ffmpeg.exe
+piper/voices/*.onnx
+
