@@ -97,6 +97,17 @@ def analizar_y_guardar_info(texto):
         c for c in unicodedata.normalize('NFD', texto_original)
         if unicodedata.category(c) != 'Mn'
     )
+    
+        # Guardar memoria solamente con el comando "guarda:"
+    if texto_normalizado.startswith("guarda:"):
+        contenido = texto_original.split(":", 1)[1].strip()
+
+        if contenido:
+            memoria.setdefault("notas", []).append(contenido)
+            guardar_memoria()
+            print("🧠 Información guardada:", contenido)
+
+        return
 
     # Nombre del usuario
     if "mi nombre es" in texto_normalizado:
@@ -143,4 +154,3 @@ def analizar_y_guardar_info(texto):
         clave = texto_original.split("es", 1)[1].strip()
         memoria["password"] = clave # se encripta automáticamente al guardar
   
-    guardar_memoria()

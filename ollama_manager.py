@@ -8,7 +8,7 @@ from memoria import (
     guardar_memoria
 )
 
-MODELO = "llama3.2:1b"
+MODELO = "qwen2.5:1.5b"
 
 class OllamaManager:
 
@@ -77,9 +77,6 @@ class OllamaManager:
             "role": "assistant",
             "content": respuesta
         })
-
-        # Guardar memoria en disco
-        guardar_memoria()
 
         return respuesta
     
