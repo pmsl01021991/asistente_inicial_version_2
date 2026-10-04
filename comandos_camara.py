@@ -201,7 +201,6 @@ def tomar_foto(hablar):
 def grabar_video(hablar, duracion=20):
 
     import subprocess
-    import threading
     import os
     import time
     import cv2
@@ -216,23 +215,48 @@ def grabar_video(hablar, duracion=20):
         "ffmpeg.exe"
     )
 
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+
+    if not cap.isOpened():
+        hablar("No pude abrir la cámara señor")
+        return None
+
+    ancho = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    alto = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = 30
+
     comando = [
         ffmpeg,
         "-y",
+
+        "-f", "rawvideo",
+        "-vcodec", "rawvideo",
+        "-pix_fmt", "bgr24",
+        "-s", f"{ancho}x{alto}",
+        "-r", str(fps),
+        "-i", "-",
+
         "-f", "dshow",
-        "-i", "video=Integrated Camera:audio=Microphone Array (Conexant SmartAudio HD)",
-        "-t", str(duracion),
+        "-i", "audio=Microphone Array (AMD Audio Device)",
+
+        "-map", "0:v:0",
+        "-map", "1:a:0",
+
         "-c:v", "libx264",
         "-preset", "veryfast",
         "-pix_fmt", "yuv420p",
+
         "-c:a", "aac",
         "-b:a", "192k",
+
+        "-shortest",
         nombre
     ]
 
-    proceso = subprocess.Popen(comando)
-
-    cap = cv2.VideoCapture(0)
+    proceso = subprocess.Popen(
+        comando,
+        stdin=subprocess.PIPE
+    )
 
     inicio = time.time()
 
@@ -243,19 +267,20 @@ def grabar_video(hablar, duracion=20):
         if not ret:
             break
 
+        proceso.stdin.write(frame.tobytes())
+
         cv2.imshow("Grabando Video - Jarvis", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
-            proceso.terminate()
             break
 
     cap.release()
     cv2.destroyAllWindows()
 
+    proceso.stdin.close()
     proceso.wait()
 
     hablar("Grabación finalizada señor")
 
     return nombre
-
     
