@@ -9,3 +9,9 @@ vosk-model-es-0.42/
 ffmpeg/ffmpeg.exe
 piper/voices/*.onnx
 
+# Sesión de WhatsApp
+whatsapp-server/.wwebjs_auth/
+whatsapp-server/.wwebjs_cache/
+*.pyc
+whatsapp-server/.wwebjs_auth_backup/
+.vscode/
