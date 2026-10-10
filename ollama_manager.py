@@ -8,7 +8,7 @@ from memoria import (
     guardar_memoria
 )
 
-MODELO = "qwen2.5:1.5b"
+MODELO = "llama3.2:3b"
 
 class OllamaManager:
 
@@ -22,7 +22,7 @@ class OllamaManager:
                 "Nunca digas que eres un modelo de IA. "
                 "Mantén el contexto de la conversación. "
                 "No inventes información cuando no la conozcas. "
-                "Las respuestas deben ser cortas salvo que el usuario pida más detalle."
+                "Responde de forma natural y con suficiente detalle para explicar bien la respuesta, normalmente entre 2 y 5 frases. Si la pregunta es sencilla, responde brevemente. Si requiere explicación, puedes extenderte."
             )
         }
 
@@ -61,7 +61,7 @@ class OllamaManager:
                     "top_p": 0.75,
                     "top_k": 15,
                     "repeat_penalty": 1.05,
-                    "num_predict": 40,
+                    "num_predict": 100,
                     "num_ctx": 1024
                 }
             },

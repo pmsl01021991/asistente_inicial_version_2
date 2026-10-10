@@ -1,3 +1,10 @@
+#  COMANDO PARA CONVERTIR EN .EXE
+
+
+python -m PyInstaller --onedir --windowed --clean --icon=jarvis.ico --name Jarvis --add-data "jarvis4.gif;." --add-data "contactos.json;." --add-data "yolov8s.pt;." --add-data "modelos;modelos" --add-data "ffmpeg;ffmpeg" --add-data "whatsapp-server-dist;whatsapp-server" --collect-all PIL --collect-all cv2 --collect-all ultralytics --collect-all torch --collect-all speech_recognition --collect-all cryptography --collect-all requests --collect-all pygame --collect-all edge_tts --collect-all pyaudio --hidden-import=PIL --hidden-import=PIL.Image --hidden-import=PIL.ImageTk --hidden-import=PIL.ImageSequence --hidden-import=cv2 --hidden-import=ultralytics --hidden-import=speech_recognition --hidden-import=pyautogui --hidden-import=pyperclip --hidden-import=requests --hidden-import=cryptography --hidden-import=cryptography.fernet --hidden-import=edge_tts --hidden-import=pygame --hidden-import=pyaudio asistente2.py
+
+
+
 # 🔧 Soluciones y mantenimiento de Jarvis
 
 Este documento contiene las soluciones realizadas para configurar y reparar Jarvis

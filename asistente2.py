@@ -15,8 +15,10 @@ from comandos_sistema import (apagar_sistema, reiniciar_sistema, suspender_siste
 from ollama_manager import ollama
 from memoria import (memoria, cargar_memoria, guardar_memoria, analizar_y_guardar_info, historial_conversacion)
 import comandos_camara
+import reconocimiento_facial
 from iniciar_whatsapp_server import iniciar_servidor_whatsapp
 from comandos_archivos import procesar_archivo
+from seguridad_asistente import configurar_clave, verificar_clave, cargar_clave
 
 escuchando = True
 microfono_bloqueado = False
@@ -115,6 +117,40 @@ def escuchar_comando(silencioso=False):
     
 def ejecutar_comando(comando):
     comando = normalizar_texto(comando)
+    
+    
+    # ==============================
+    # RECONOCIMIENTO FACIAL
+    # ==============================
+
+    if "registrar mi rostro" in comando or "registrar rostro" in comando:
+        try:
+            reconocimiento_facial.registrar_rostro(hablar, nombre="Pablo")
+        except Exception as e:
+            print("Error en registro facial:", e)
+            hablar("No pude completar el registro facial.")
+        return
+
+    elif "reconoce mi rostro" in comando or "reconocer mi rostro" in comando or \
+         "quien esta frente a la camara" in comando:
+        try:
+            reconocimiento_facial.reconocer_rostro(hablar)
+        except Exception as e:
+            print("Error en reconocimiento facial:", e)
+            hablar("Ocurrió un problema al reconocer el rostro.")
+        return
+
+    elif "cuantas personas hay" in comando or "cuantas personas ves" in comando:
+        try:
+            reconocimiento_facial.contar_personas(hablar)
+        except Exception as e:
+            print("Error al contar rostros:", e)
+            hablar("No pude contar los rostros.")
+        return
+
+    if "establecer clave" in comando:
+        configurar_clave(hablar, escuchar_comando)
+        return
 
     # 🎙️ ACTIVAR / DESACTIVAR MICRÓFONO
     if "desactivar microfono" in comando or "desactiva el microfono "in comando:
@@ -292,6 +328,9 @@ def ejecutar_comando(comando):
     else:
         jarvis_ui.cambiar_color_texto("pensando")
         jarvis_ui.actualizar_estado("🧠 Pensando...")
+        
+        analizar_y_guardar_info(comando)
+        guardar_memoria()
 
         respuesta = ollama.preguntar(comando)
 
@@ -339,7 +378,7 @@ async def _hablar(texto):
     communicate = edge_tts.Communicate(
         text=texto,
         voice="es-PE-CamilaNeural",
-        rate="+25%"
+        rate="+15%"
 
     )
 
@@ -353,7 +392,59 @@ async def _hablar(texto):
     
 def iniciar_jarvis():
     cargar_memoria()
-    hablar("Jarvis iniciado.")
+    
+    
+    # AUTENTICACION FACIAL Y CLAVE DE VOZ
+    rostro_validado = False
+
+    try:
+        rostro_registrado = (
+            os.path.exists(reconocimiento_facial.ARCHIVO_ROSTRO)
+            and os.path.exists(reconocimiento_facial.ARCHIVO_NOMBRES)
+        )
+
+        if not rostro_registrado:
+            hablar("No hay un rostro registrado. Vamos a registrarlo.")
+
+            rostro_validado = reconocimiento_facial.registrar_rostro(
+                hablar,
+                nombre="Pablo"
+            )
+
+        else:
+            nombre_reconocido = reconocimiento_facial.reconocer_rostro(hablar)
+            rostro_validado = nombre_reconocido == "Pablo"
+
+    except Exception as e:
+        print("Error en autenticación facial:", e)
+        hablar("No pude verificar el rostro. Usaremos la clave de voz.")
+
+    if not rostro_validado:
+        if not cargar_clave():
+            hablar("No hay una clave configurada. Vamos a establecer una nueva clave.")
+
+            if not configurar_clave(hablar, escuchar_comando):
+                hablar("No se pudo establecer la clave. El asistente se cerrará.")
+                os._exit(0)
+
+        else:
+            if not verificar_clave(hablar, escuchar_comando):
+                os._exit(0)
+
+    else:
+        print("Autenticación facial correcta.")
+
+
+    hora_actual = datetime.datetime.now().hour
+
+    if hora_actual < 12:
+        saludo = "Buenos días, señor."
+    elif hora_actual < 18:
+        saludo = "Buenas tardes, señor."
+    else:
+        saludo = "Buenas noches, señor."
+
+    hablar(f"{saludo} Bienvenido. Jarvis listo para asistirle.")
 
     with sr.Microphone() as source:
 

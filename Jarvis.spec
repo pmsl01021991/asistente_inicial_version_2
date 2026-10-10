@@ -1,9 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('jarvis4.gif', '.'), ('contactos.json', '.'), ('ffmpeg', 'ffmpeg'), ('whatsapp-server-dist', 'whatsapp-server')]
+datas = [('jarvis4.gif', '.'), ('contactos.json', '.'), ('yolov8s.pt', '.'), ('modelos', 'modelos'), ('ffmpeg', 'ffmpeg'), ('whatsapp-server-dist', 'whatsapp-server')]
 binaries = []
-hiddenimports = ['PIL', 'PIL.Image', 'PIL.ImageTk', 'PIL.ImageSequence', 'cv2', 'ultralytics', 'torch', 'speech_recognition', 'pyautogui', 'pyperclip', 'requests', 'cryptography', 'cryptography.fernet', 'edge_tts', 'pygame', 'pyaudio']
+hiddenimports = ['PIL', 'PIL.Image', 'PIL.ImageTk', 'PIL.ImageSequence', 'cv2', 'ultralytics', 'speech_recognition', 'pyautogui', 'pyperclip', 'requests', 'cryptography', 'cryptography.fernet', 'edge_tts', 'pygame', 'pyaudio']
 tmp_ret = collect_all('PIL')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 tmp_ret = collect_all('cv2')
