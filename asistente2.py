@@ -9,7 +9,9 @@ import pygame
 import threading
 import unicodedata
 from interfaz_jarvis import InterfazJarvisAnimada
-from comandos_whatsapp import enviar_whatsapp_web, llamar_whatsapp, interpretar_whatsapp
+from comandos_whatsapp import enviar_whatsapp_web, llamar_whatsapp,interpretar_whatsapp
+from efectos_sonido import ( reproducir_aplausos, reproducir_risas, reproducir_snap_tony, reproducir_efecto_personalizado)
+from playsound import playsound
 from comandos_multimedia import (tomar_foto_y_enviar,grabar_video_y_enviar)
 from comandos_sistema import (apagar_sistema, reiniciar_sistema, suspender_sistema, confirmar_accion_por_voz)
 from ollama_manager import ollama
@@ -116,6 +118,8 @@ def escuchar_comando(silencioso=False):
             return ""
     
 def ejecutar_comando(comando):
+    global ultimo_audio
+
     comando = normalizar_texto(comando)
     
     
@@ -173,6 +177,44 @@ def ejecutar_comando(comando):
         fecha = datetime.datetime.now().strftime("%d de %B del %Y")
         hablar(f"Hoy es {fecha}")
         return
+
+#----- COMANDO PARA SONIDO DE APLAUSOS------    
+        
+    elif "aplausos" in comando or "aplaude" in comando or "jarvis aplaude" in comando or "aplaude jarvis porfavor" in comando or "porfavor jarvis aplaude" in comando:
+        reproducir_aplausos(hablar, jarvis_ui, estado)
+        ultimo_audio = estado["ultimo_audio"]
+        return
+        
+#----- COMANDO PARA SONIDO DE RISAS------  
+        
+    elif "risas" in comando or "riete" in comando or "jarvis riete" in comando or "riete jarvis" in comando:
+        reproducir_risas(hablar, jarvis_ui, estado)
+        ultimo_audio = estado["ultimo_audio"]
+        return
+        
+#----- COMANDO PARA TONY STARK------ 
+    elif "yo soy airon man" in comando or "yo soy iron man" in comando or "airon man" in comando:
+        reproducir_snap_tony(hablar, jarvis_ui, estado)
+        ultimo_audio = estado["ultimo_audio"]
+        return  
+    
+    elif "llora" in comando or "jarvis llora" in comando:
+        reproducir_efecto_personalizado(
+            "llorar.mp3", "Llorando", hablar, jarvis_ui, estado
+        )
+        return
+
+    elif "estornuda" in comando or "jarvis estornuda" in comando:
+        reproducir_efecto_personalizado(
+            "estornudar.mp3", "Estornudando", hablar, jarvis_ui, estado
+        )
+        return
+
+    elif "tose" in comando or "jarvis tose" in comando:
+        reproducir_efecto_personalizado(
+            "toser.mp3", "Tosiendo", hablar, jarvis_ui, estado
+        )
+        return 
     
     elif "toma una foto y mandalo a" in comando or "toma una foto y mandarlo a" in comando:
 
@@ -483,6 +525,10 @@ def iniciar_jarvis():
 
                     continue
 
+                if jarvis_hablando or time.time() - ultimo_audio < 2.0:
+                    time.sleep(0.1)
+                    continue
+
                 print("🎤 Escuchando...")
 
                 jarvis_ui.cambiar_color_texto("escuchando")
@@ -530,6 +576,15 @@ if not iniciar_servidor_whatsapp():
     print("No se pudo iniciar el servidor de WhatsApp.")
             
 jarvis_ui = InterfazJarvisAnimada(recurso)
+
+estado = {
+    "recurso": recurso,
+    "jarvis_hablando": False,
+    "escuchando": True,
+    "microfono_bloqueado": False,
+    "ultimo_audio": 0,
+    "efecto_explosion": lambda: None
+}
 
 threading.Thread(
     target=iniciar_jarvis,
