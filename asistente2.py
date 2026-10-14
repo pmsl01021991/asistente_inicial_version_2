@@ -121,11 +121,7 @@ def ejecutar_comando(comando):
     global ultimo_audio
 
     comando = normalizar_texto(comando)
-    
-    
-    # ==============================
-    # RECONOCIMIENTO FACIAL
-    # ==============================
+
 
     if "registrar mi rostro" in comando or "registrar rostro" in comando:
         try:
