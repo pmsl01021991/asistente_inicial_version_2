@@ -120,6 +120,9 @@ def ejecutar_comando(comando):
     global ultimo_audio
 
     comando = normalizar_texto(comando)
+    
+    if comando.strip() == "12":
+        comando = "tose"
 
 
     if "registrar mi rostro" in comando or "registrar rostro" in comando:
@@ -205,10 +208,11 @@ def ejecutar_comando(comando):
         )
         return
 
-    elif "tose" in comando or "jarvis tose" in comando:
+    elif any(palabra in comando.split() for palabra in ["tose", "doce", "toser", "12"]):
         reproducir_efecto_personalizado(
             "toser.mp3", "Tosiendo", hablar, jarvis_ui, estado
         )
+        ultimo_audio = estado["ultimo_audio"]
         return 
     
     elif "toma una foto y mandalo a" in comando or "toma una foto y mandarlo a" in comando:
