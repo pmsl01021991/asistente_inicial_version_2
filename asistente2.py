@@ -91,8 +91,7 @@ def escuchar_comando(silencioso=False):
             audio = recognizer.listen(
                 source,
                 timeout=5,
-                phrase_time_limit=10
-            )
+                phrase_time_limit=10)
 
             comando = recognizer.recognize_google(audio, language="es-PE")
             comando = corregir_texto(comando)
@@ -219,21 +218,16 @@ def ejecutar_comando(comando):
             contacto = comando.lower()
 
             contacto = contacto.replace(
-                "toma una foto y mandalo a",
-                ""
-            )
+                "toma una foto y mandalo a", "")
             
             contacto = contacto.replace(
-                "toma una foto y mandarlo a",
-                ""
-            )
+                "toma una foto y mandarlo a","")
 
             contacto = contacto.strip()
 
             tomar_foto_y_enviar(
                 hablar,
-                contacto
-            )
+                contacto)
 
         except Exception as e:
             hablar("No pude enviar la fotografía.")
@@ -264,29 +258,27 @@ def ejecutar_comando(comando):
         os.system('PowerShell -Command "Clear-RecycleBin -Force"')
         hablar("Papelera limpia señor.")
         return
+    
     elif "apagar el sistema" in comando or "apagar computadora" in comando:
         confirmar_accion_por_voz(
             "apagar",
             hablar,
             escuchar_comando,
-            jarvis_ui
-        )
+            jarvis_ui)
 
     elif "reiniciar el sistema" in comando or "reiniciar computadora" in comando:
         confirmar_accion_por_voz(
             "reiniciar",
             hablar,
             escuchar_comando,
-            jarvis_ui
-        )
+            jarvis_ui)
 
     elif "suspender el sistema" in comando or "modo suspensión" in comando:
         confirmar_accion_por_voz(
             "suspender",
             hablar,
             escuchar_comando,
-            jarvis_ui
-        )
+            jarvis_ui)
         
     elif "gracias" in comando or "gracias jarvis" in comando:
         hablar("Para servirle señor.")
@@ -307,9 +299,7 @@ def ejecutar_comando(comando):
         threading.Thread(
             target=comandos_camara.modo_vision_jarvis,
             args=(hablar,),
-            daemon=True
-        ).start()
-
+            daemon=True).start()
         return
     
     elif "detener vision" in comando or "detener vision" in comando:
@@ -330,21 +320,18 @@ def ejecutar_comando(comando):
 
         contacto = contacto.replace(
             "graba un video y mandalo a",
-            ""
-        )
+            "")
 
         contacto = contacto.replace(
             "graba un video y mandarlo a",
-            ""
-        )
+            "")
 
         contacto = contacto.strip()
 
         grabar_video_y_enviar(
             hablar,
             contacto,
-            duracion=20
-        )
+            duracion=20)
 
         return
     
@@ -357,9 +344,7 @@ def ejecutar_comando(comando):
 
         procesar_archivo(
             hablar,
-            comando
-        )
-
+            comando)
         return
 
     # 🧠 RESPUESTA NORMAL CON OLLAMA
@@ -385,8 +370,7 @@ ACTIVADORES = (
     "hola jarvis",
     "oye jarvis",
     "jarvis estás ahí",
-    "jarvis estas ahi",
-)
+    "jarvis estas ahi",)
 
 recognizer = sr.Recognizer()
 pygame.mixer.init()
@@ -416,9 +400,7 @@ async def _hablar(texto):
     communicate = edge_tts.Communicate(
         text=texto,
         voice="es-PE-CamilaNeural",
-        rate="+15%"
-
-    )
+        rate="+15%" )
 
     await communicate.save(archivo)
     pygame.mixer.music.load(archivo)
@@ -533,16 +515,14 @@ def iniciar_jarvis():
                 audio = recognizer.listen(
                     source,
                     timeout=5,
-                    phrase_time_limit=8
-                )
+                    phrase_time_limit=8)
 
                 try:
                     texto = normalizar_texto(
                         recognizer.recognize_google(
                             audio,
                             language="es-PE"
-                        )
-                    )
+                        ))
                 except sr.UnknownValueError:
                     texto = ""
 
@@ -579,8 +559,7 @@ estado = {
     "escuchando": True,
     "microfono_bloqueado": False,
     "ultimo_audio": 0,
-    "efecto_explosion": lambda: None
-}
+    "efecto_explosion": lambda: None}
 
 threading.Thread(
     target=iniciar_jarvis,
